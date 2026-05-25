@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Flip & Learn — Web Dev Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F5F2EB;
+    --surface: #FFFFFF;
+    --surface2: #EDEAE2;
+    --ink: #1A1916;
+    --ink2: #6B6860;
+    --ink3: #9E9B93;
+    --accent: #2A4DD0;
+    --accent-light: #E8ECFB;
+    --correct: #1D9E75;
+    --correct-light: #E1F5EE;
+    --wrong: #D85A30;
+    --wrong-light: #FAECE7;
+    --border: rgba(26,25,22,0.1);
+    --border2: rgba(26,25,22,0.06);
+    --card-r: 20px;
+    --radius: 12px;
+    --shadow: 0 2px 16px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 40px rgba(0,0,0,0.14);
+    --transition: 0.2s ease;
+    --topic-color: #2A4DD0;
+    --topic-light: #E8ECFB;
+  }
+
+  [data-theme="dark"] {
+    --bg: #141311;
+    --surface: #1E1C19;
+    --surface2: #272420;
+    --ink: #F0EDE6;
+    --ink2: #A8A49C;
+    --ink3: #6B6860;
+    --accent: #6B8AFF;
+    --accent-light: #1A1E35;
+    --correct: #5DCAA5;
+    --correct-light: #04342C;
+    --wrong: #F0997B;
+    --wrong-light: #4A1B0C;
+    --border: rgba(240,237,230,0.1);
+    --border2: rgba(240,237,230,0.05);
+    --shadow: 0 2px 16px rgba(0,0,0,0.3);
+    --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 1rem 4rem;
+    transition: background var(--transition), color var(--transition);
+  }
+
+  header {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 0 2.5rem;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo span { color: var(--accent); }
+
+  .logo-topic-badge {
+    display: none;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 99px;
+    background: var(--topic-light);
+    color: var(--topic-color);
+  }
+  .logo-topic-badge.visible { display: inline-block; }
+
+  .header-right { display: flex; align-items: center; gap: 10px; }
+
+  .back-btn {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 8px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--ink2);
+    cursor: pointer;
+    align-items: center;
+    gap: 6px;
+    transition: all var(--transition);
+  }
+  .back-btn.visible { display: flex; }
+  .back-btn:hover { background: var(--surface2); color: var(--ink); }
+
+  .theme-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 8px 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--ink2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: all var(--transition);
+  }
+  .theme-btn:hover { background: var(--surface2); color: var(--ink); }
+
+  /* ── Home Screen ── */
+  #home-screen {
+    width: 100%;
+    max-width: 720px;
+  }
+
+  .home-hero {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .home-eyebrow {
+    display: inline-block;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 99px;
+    margin-bottom: 1.25rem;
+  }
+  .home-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.6rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+  .home-sub {
+    font-size: 1rem;
+    color: var(--ink2);
+    line-height: 1.65;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .topic-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 1.5rem;
+  }
+
+  .topic-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--card-r);
+    padding: 1.75rem 1.25rem 1.5rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .topic-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .topic-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+  .topic-card:hover::after { opacity: 1; }
+
+  .topic-card[data-topic="html"] { --tc: #E2522B; --tl: #FDF0EC; }
+  .topic-card[data-topic="css"]  { --tc: #2462E8; --tl: #EAF0FD; }
+  .topic-card[data-topic="js"]   { --tc: #B08A00; --tl: #FDF8E1; }
+  [data-theme="dark"] .topic-card[data-topic="html"] { --tl: #3A1508; }
+  [data-theme="dark"] .topic-card[data-topic="css"]  { --tl: #0C1A3A; }
+  [data-theme="dark"] .topic-card[data-topic="js"]   { --tl: #2B2200; }
+
+  .topic-card:hover { border-color: var(--tc); }
+  .topic-card::after { background: var(--tl); }
+
+  .topic-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: var(--tl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.5rem;
+    position: relative;
+    z-index: 1;
+    transition: background 0.2s;
+  }
+  .topic-card:hover .topic-icon { background: var(--tc); }
+
+  .topic-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 0.3rem;
+    position: relative;
+    z-index: 1;
+  }
+  .topic-desc {
+    font-size: 0.78rem;
+    color: var(--ink3);
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+  }
+  .topic-count {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--tc);
+    background: var(--tl);
+    padding: 3px 10px;
+    border-radius: 99px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .all-topics-btn {
+    width: 100%;
+    background: var(--surface);
+    border: 1.5px dashed var(--border);
+    border-radius: var(--card-r);
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--ink2);
+    transition: all var(--transition);
+    letter-spacing: -0.01em;
+  }
+  .all-topics-btn:hover { background: var(--surface2); color: var(--ink); border-color: var(--accent); }
+
+  /* ── Progress Bar ── */
+  .progress-wrap {
+    width: 100%;
+    max-width: 720px;
+    margin-bottom: 2rem;
+  }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--ink3);
+    font-weight: 500;
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .progress-track {
+    width: 100%;
+    height: 5px;
+    background: var(--border2);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--topic-color);
+    border-radius: 99px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* ── Card Scene ── */
+  .scene {
+    width: 100%;
+    max-width: 720px;
+    perspective: 1400px;
+    margin-bottom: 2rem;
+  }
+
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 260px;
+    transform-style: preserve-3d;
+    transition: transform 0.7s cubic-bezier(0.4,0,0.2,1);
+  }
+  .card-inner.flipped { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: var(--card-r);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem;
+    text-align: center;
+  }
+
+  .card-front { background: var(--surface); box-shadow: var(--shadow-lg); }
+  .card-back { background: var(--surface); box-shadow: var(--shadow-lg); transform: rotateY(180deg); }
+  .card-back.correct-card { background: var(--correct-light); border-color: var(--correct); }
+  .card-back.wrong-card { background: var(--wrong-light); border-color: var(--wrong); }
+
+  .card-tag {
+    position: absolute;
+    top: 1.25rem;
+    left: 1.5rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: var(--topic-light);
+    color: var(--topic-color);
+  }
+
+  .card-number {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--ink3);
+    font-family: 'Syne', sans-serif;
+  }
+
+  .question-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    line-height: 1.4;
+    color: var(--ink);
+    max-width: 520px;
+    letter-spacing: -0.02em;
+  }
+
+  .question-code {
+    font-family: 'DM Mono', 'Courier New', monospace;
+    font-size: 0.82rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    margin-top: 0.75rem;
+    text-align: left;
+    color: var(--ink2);
+    white-space: pre;
+    line-height: 1.6;
+    max-width: 420px;
+  }
+
+  .answer-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .answer-label.correct-lbl { color: var(--correct); }
+  .answer-label.wrong-lbl { color: var(--wrong); }
+
+  .answer-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.45rem;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+  }
+  .answer-text.correct-txt { color: var(--correct); }
+  .answer-text.wrong-txt { color: var(--wrong); }
+
+  .answer-sub {
+    font-size: 0.86rem;
+    color: var(--ink2);
+    margin-top: 0.5rem;
+    font-style: italic;
+    max-width: 440px;
+    line-height: 1.5;
+  }
+
+  /* ── Choices ── */
+  .choices {
+    width: 100%;
+    max-width: 720px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 1.75rem;
+  }
+
+  .choice-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 400;
+    color: var(--ink);
+    cursor: pointer;
+    text-align: left;
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1.4;
+    position: relative;
+    overflow: hidden;
+  }
+  .choice-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    background: var(--topic-light);
+    transition: opacity var(--transition);
+  }
+  .choice-btn:not(:disabled):hover { border-color: var(--topic-color); transform: translateY(-1px); box-shadow: var(--shadow); }
+  .choice-btn:not(:disabled):hover::before { opacity: 1; }
+  .choice-btn:disabled { cursor: default; }
+
+  .choice-letter {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    flex-shrink: 0;
+    color: var(--ink2);
+    transition: all var(--transition);
+    position: relative;
+    z-index: 1;
+  }
+  .choice-text { position: relative; z-index: 1; font-family: 'DM Mono', 'Courier New', monospace; font-size: 0.82rem; }
+
+  .choice-btn.correct-choice { background: var(--correct-light); border-color: var(--correct); }
+  .choice-btn.correct-choice .choice-letter { background: var(--correct); color: #fff; }
+  .choice-btn.wrong-choice { background: var(--wrong-light); border-color: var(--wrong); }
+  .choice-btn.wrong-choice .choice-letter { background: var(--wrong); color: #fff; }
+  .choice-btn.dimmed { opacity: 0.38; }
+
+  /* ── Score Strip ── */
+  .score-strip {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+  .score-pill {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--ink2);
+    font-weight: 500;
+  }
+  .score-num { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: var(--ink); }
+  .score-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot-correct { background: var(--correct); }
+  .dot-wrong { background: var(--wrong); }
+
+  /* ── Next Button ── */
+  .actions { width: 100%; max-width: 720px; display: flex; justify-content: flex-end; gap: 10px; }
+
+  .next-btn {
+    background: var(--topic-color);
+    color: #fff;
+    border: none;
+    border-radius: 99px;
+    padding: 14px 32px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all var(--transition);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .next-btn.visible { opacity: 1; pointer-events: all; }
+  .next-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+  /* ── Result Screen ── */
+  #result-screen { display: none; width: 100%; max-width: 720px; flex-direction: column; align-items: center; gap: 0; }
+  #result-screen.visible { display: flex; }
+
+  .result-card {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-r);
+    padding: 3rem 2.5rem;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 1.5rem;
+  }
+  .result-emoji { font-size: 3.5rem; margin-bottom: 1rem; display: block; }
+  .result-title { font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; letter-spacing: -0.04em; color: var(--ink); margin-bottom: 0.5rem; }
+  .result-msg { font-size: 1rem; color: var(--ink2); margin-bottom: 2.5rem; line-height: 1.6; max-width: 400px; margin-left: auto; margin-right: auto; }
+  .result-topic-badge { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 12px; border-radius: 99px; background: var(--topic-light); color: var(--topic-color); margin-bottom: 1rem; }
+
+  .result-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 2.5rem; }
+  .stat-box { background: var(--surface2); border-radius: var(--radius); padding: 1.25rem 1rem; }
+  .stat-val { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--ink); letter-spacing: -0.04em; display: block; margin-bottom: 4px; }
+  .stat-lbl { font-size: 0.78rem; color: var(--ink3); font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  .result-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+  .restart-btn {
+    background: var(--topic-color);
+    color: #fff;
+    border: none;
+    border-radius: 99px;
+    padding: 14px 32px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+  .restart-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+  .home-btn {
+    background: var(--surface);
+    color: var(--ink2);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 14px 32px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+  .home-btn:hover { background: var(--surface2); color: var(--ink); }
+
+  .breakdown {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-r);
+    overflow: hidden;
+  }
+  .breakdown-title { font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3); padding: 1rem 1.5rem; border-bottom: 1px solid var(--border2); }
+  .breakdown-row { display: flex; align-items: flex-start; padding: 0.85rem 1.5rem; border-bottom: 1px solid var(--border2); gap: 12px; font-size: 0.85rem; }
+  .breakdown-row:last-child { border-bottom: none; }
+  .bd-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+  .bd-q { flex: 1; color: var(--ink2); line-height: 1.4; }
+  .bd-a { font-weight: 500; color: var(--ink); font-family: 'DM Mono', 'Courier New', monospace; font-size: 0.8rem; flex-shrink: 0; text-align: right; max-width: 180px; }
+
+  /* ── Quiz Wrap ── */
+  #quiz-wrap { display: none; width: 100%; max-width: 720px; }
+  #quiz-wrap.visible { display: block; }
+
+  /* ── Animations ── */
+  @keyframes pop { 0%{transform:scale(0.94);opacity:0} 100%{transform:scale(1);opacity:1} }
+  .pop { animation: pop 0.35s cubic-bezier(0.4,0,0.2,1) both; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .shake { animation: shake 0.3s ease; }
+  @keyframes pulse-correct { 0%,100%{box-shadow:0 0 0 0 rgba(29,158,117,0)} 50%{box-shadow:0 0 0 8px rgba(29,158,117,0.2)} }
+  .pulse-correct { animation: pulse-correct 0.5s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  .fade-in { animation: fadeIn 0.4s ease both; }
+
+  /* ── Tablet ── */
+  @media (max-width: 640px) {
+    .topic-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .result-stats { grid-template-columns: 1fr 1fr; }
+    .home-title { font-size: 2rem; }
+    .card-inner { height: auto; min-height: 220px; }
+    .card-face { padding: 2rem 1.5rem; }
+    .result-card { padding: 2rem 1.5rem; }
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 480px) {
+    body { padding: 0 0.75rem 3rem; }
+
+    header { padding: 1rem 0 1.75rem; }
+    .logo { font-size: 1.25rem; }
+    .logo-topic-badge { font-size: 0.62rem; padding: 3px 8px; }
+    .back-btn { padding: 7px 12px; font-size: 0.78rem; }
+    .theme-btn { padding: 7px 12px; font-size: 0.78rem; }
+    .theme-btn span:last-child { display: none; } /* hide "Dark mode" label, keep icon */
+
+    .home-hero { margin-bottom: 2rem; }
+    .home-title { font-size: 1.7rem; }
+    .home-sub { font-size: 0.9rem; }
+
+    .topic-grid { grid-template-columns: 1fr; gap: 10px; }
+    .topic-card { padding: 1.25rem 1rem; display: flex; align-items: center; text-align: left; gap: 1rem; }
+    .topic-icon { margin: 0; width: 44px; height: 44px; flex-shrink: 0; font-size: 1.25rem; border-radius: 12px; }
+    .topic-info { flex: 1; }
+    .topic-name { font-size: 1rem; }
+    .topic-desc { font-size: 0.75rem; }
+    .topic-count { margin-top: 0.3rem; }
+    .all-topics-btn { padding: 1rem; font-size: 0.88rem; }
+
+    .progress-wrap { margin-bottom: 1.25rem; }
+    .score-strip { gap: 8px; margin-bottom: 1.25rem; }
+    .score-pill { padding: 8px 12px; font-size: 0.8rem; }
+
+    .scene { margin-bottom: 1.25rem; }
+    .card-inner { min-height: 200px; }
+    .card-face { padding: 1.75rem 1.25rem; padding-top: 2.75rem; }
+    .question-text { font-size: 1rem; line-height: 1.45; }
+    .card-tag { top: 1rem; left: 1rem; }
+    .card-number { top: 1rem; right: 1rem; }
+    .answer-text { font-size: 1.1rem; }
+    .answer-sub { font-size: 0.8rem; }
+
+    .choices { grid-template-columns: 1fr; gap: 8px; margin-bottom: 1.25rem; }
+    .choice-btn { padding: 0.85rem 1rem; font-size: 0.85rem; }
+
+    .actions { justify-content: stretch; }
+    .next-btn { width: 100%; justify-content: center; padding: 14px 20px; }
+
+    .result-card { padding: 1.75rem 1.25rem; }
+    .result-title { font-size: 1.7rem; }
+    .result-msg { font-size: 0.9rem; margin-bottom: 1.75rem; }
+    .result-stats { grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 1.75rem; }
+    .stat-val { font-size: 1.5rem; }
+    .stat-lbl { font-size: 0.7rem; }
+    .result-actions { flex-direction: column; }
+    .restart-btn, .home-btn { width: 100%; text-align: center; }
+
+    .breakdown-row { padding: 0.75rem 1rem; flex-wrap: wrap; gap: 8px; }
+    .bd-a { max-width: 100%; text-align: left; }
+  }
+
+  /* ── Very small (320px) ── */
+  @media (max-width: 360px) {
+    .home-title { font-size: 1.5rem; }
+    .result-stats { grid-template-columns: 1fr 1fr; }
+    .stat-val { font-size: 1.3rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    Flip & <span>Learn</span>
+    <span class="logo-topic-badge" id="logo-badge"></span>
+  </div>
+  <div class="header-right">
+    <button class="back-btn" id="back-btn" onclick="goHome()">← Topics</button>
+    <button class="theme-btn" onclick="toggleTheme()">
+      <span id="theme-icon">🌙</span>
+      <span id="theme-label">Dark mode</span>
+    </button>
+  </div>
+</header>
+
+<!-- ══════════════ HOME SCREEN ══════════════ -->
+<div id="home-screen">
+  <div class="home-hero">
+    <span class="home-eyebrow">Web Development Quiz</span>
+    <h1 class="home-title">What are you<br>studying today?</h1>
+    <p class="home-sub">Pick a topic and flip through flashcards to test your knowledge with instant feedback.</p>
+  </div>
+
+  <div class="topic-grid">
+    <div class="topic-card" data-topic="html" onclick="selectTopic('html')">
+      
+      <div class="topic-info">
+        <div class="topic-name">HTML</div>
+        <div class="topic-desc">Structure, semantics & markup</div>
+        <span class="topic-count" id="html-count">10 cards</span>
+      </div>
+    </div>
+    <div class="topic-card" data-topic="css" onclick="selectTopic('css')">
+      
+      <div class="topic-info">
+        <div class="topic-name">CSS</div>
+        <div class="topic-desc">Styling, layout & design</div>
+        <span class="topic-count" id="css-count">10 cards</span>
+      </div>
+    </div>
+    <div class="topic-card" data-topic="js" onclick="selectTopic('js')">
+      
+      <div class="topic-info">
+        <div class="topic-name">JavaScript</div>
+        <div class="topic-desc">Logic, DOM & behaviour</div>
+        <span class="topic-count" id="js-count">10 cards</span>
+      </div>
+    </div>
+  </div>
+
+  <button class="all-topics-btn" onclick="selectTopic('all')">
+    🌐 Mix all topics — shuffle everything together
+  </button>
+</div>
+
+<!-- ══════════════ QUIZ WRAP ══════════════ -->
+<div id="quiz-wrap">
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span id="progress-label">Card 1 of 10</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="score-strip">
+    <div class="score-pill">
+      <span class="score-dot dot-correct"></span>
+      Correct: <span class="score-num" id="correct-count">0</span>
+    </div>
+    <div class="score-pill">
+      <span class="score-dot dot-wrong"></span>
+      Incorrect: <span class="score-num" id="wrong-count">0</span>
+    </div>
+  </div>
+
+  <div class="scene">
+    <div class="card-inner" id="card-inner">
+      <div class="card-face card-front">
+        <div class="card-tag" id="card-tag">HTML</div>
+        <div class="card-number" id="card-number">1 / 10</div>
+        <p class="question-text" id="question-text"></p>
+        <div class="question-code" id="question-code" style="display:none"></div>
+      </div>
+      <div class="card-face card-back" id="card-back">
+        <div id="result-label" class="answer-label"></div>
+        <div id="answer-display" class="answer-text"></div>
+        <div id="answer-sub" class="answer-sub"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="choices" id="choices-wrap"></div>
+
+  <div class="actions">
+    <button class="next-btn" id="next-btn" onclick="nextCard()">
+      Next card
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════ RESULT SCREEN ══════════════ -->
+<div id="result-screen">
+  <div class="result-card">
+    <span class="result-topic-badge" id="result-topic-badge"></span>
+    <h2 class="result-title" id="result-title">Great work!</h2>
+    <p class="result-msg" id="result-msg"></p>
+    <div class="result-stats">
+      <div class="stat-box">
+        <span class="stat-val" id="stat-score">0/10</span>
+        <span class="stat-lbl">Score</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-val" id="stat-pct">0%</span>
+        <span class="stat-lbl">Accuracy</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-val" id="stat-time">0s</span>
+        <span class="stat-lbl">Time taken</span>
+      </div>
+    </div>
+    <div class="result-actions">
+      <button class="restart-btn" onclick="restartQuiz()">Try again →</button>
+      <button class="home-btn" onclick="goHome()">← Choose topic</button>
+    </div>
+  </div>
+  <div class="breakdown">
+    <div class="breakdown-title">Answer breakdown</div>
+    <div id="breakdown-list"></div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   QUESTION BANK
+═══════════════════════════════════════════ */
+const BANK = {
+  html: [
+    {
+      q: "What does the <DOCTYPE html> declaration do?",
+      choices: ["Defines the document as HTML5", "Links a stylesheet", "Creates a header tag", "Starts a new HTML file"],
+      answer: 0,
+      explanation: "<!DOCTYPE html> tells the browser to render the page in standards mode using HTML5."
+    },
+    {
+      q: "Which HTML element is used to define the main content unique to a page?",
+      choices: ["<section>", "<article>", "<main>", "<div>"],
+      answer: 2,
+      explanation: "<main> wraps the dominant content of <body>, and should appear only once per page."
+    },
+    {
+      q: "What attribute makes an input field required before form submission?",
+      choices: ["validate", "required", "mandatory", "nonempty"],
+      answer: 1,
+      explanation: "The 'required' attribute prevents form submission if the field is empty."
+    },
+    {
+      q: "What is the correct HTML for an image with alt text?",
+      choices: ['<img href="img.png" alt="desc">', '<img src="img.png" alt="desc">', '<image src="img.png">', '<img url="img.png">'],
+      answer: 1,
+      explanation: "<img> uses 'src' for the file path and 'alt' for accessibility description."
+    },
+    {
+      q: "Which element represents a self-contained piece of content that could be distributed independently?",
+      choices: ["<aside>", "<section>", "<article>", "<figure>"],
+      answer: 2,
+      explanation: "<article> is for self-contained content like a blog post or news story."
+    },
+    {
+      q: "What does the 'defer' attribute on a <script> tag do?",
+      choices: ["Blocks page rendering", "Loads the script after HTML is parsed", "Loads the script asynchronously", "Disables the script"],
+      answer: 1,
+      explanation: "'defer' delays script execution until the HTML document has fully parsed."
+    },
+    {
+      q: "Which input type would you use for a colour picker?",
+      choices: ['type="palette"', 'type="colour"', 'type="color"', 'type="rgb"'],
+      answer: 2,
+      explanation: '<input type="color"> renders a native colour-picker widget in supporting browsers.'
+    },
+    {
+      q: "What is the purpose of the <meta name='viewport'> tag?",
+      choices: ["Sets page background", "Controls layout on mobile browsers", "Links a favicon", "Defines page charset"],
+      answer: 1,
+      explanation: "The viewport meta tag controls how the page is scaled on mobile/responsive devices."
+    },
+    {
+      q: "Which HTML5 element is used for navigation links?",
+      choices: ["<menu>", "<nav>", "<links>", "<navbar>"],
+      answer: 1,
+      explanation: "<nav> semantically marks a section containing navigation links."
+    },
+    {
+      q: "What attribute specifies a unique identifier for an HTML element?",
+      choices: ["class", "name", "key", "id"],
+      answer: 3,
+      explanation: "The 'id' attribute gives an element a unique identifier used for styling and JS targeting."
+    }
+  ],
+  css: [
+    {
+      q: "What does CSS stand for?",
+      choices: ["Cascading Style Sheets", "Creative Style Syntax", "Computer Style Scripting", "Colorful Style System"],
+      answer: 0,
+      explanation: "CSS — Cascading Style Sheets — controls the presentation of HTML elements."
+    },
+    {
+      q: "Which CSS property controls the space between an element's border and its content?",
+      choices: ["margin", "spacing", "padding", "gap"],
+      answer: 2,
+      explanation: "'padding' is the space inside the border; 'margin' is outside the border."
+    },
+    {
+      q: "What value of 'display' creates a flex container?",
+      choices: ["block", "flex", "inline", "grid"],
+      answer: 1,
+      explanation: "'display: flex' enables the Flexbox layout model on the container."
+    },
+    {
+      q: "Which property is used to make text bold?",
+      choices: ["text-style", "font-weight", "text-weight", "font-style"],
+      answer: 1,
+      explanation: "'font-weight: bold' or 'font-weight: 700' makes text appear bold."
+    },
+    {
+      q: "How do you select all <p> elements inside a .container class?",
+      choices: [".container + p", ".container > p", ".container p", "p .container"],
+      answer: 2,
+      explanation: "'.container p' is a descendant selector — it selects all <p> inside .container at any depth."
+    },
+    {
+      q: "What does 'position: absolute' do?",
+      choices: ["Positions relative to the viewport", "Removes from normal flow, positions to nearest positioned ancestor", "Keeps the element in place while scrolling", "Stacks elements on top of each other"],
+      answer: 1,
+      explanation: "'absolute' removes the element from normal flow and positions it relative to the nearest non-static ancestor."
+    },
+    {
+      q: "Which CSS unit is relative to the root element's font size?",
+      choices: ["em", "px", "rem", "vh"],
+      answer: 2,
+      explanation: "'rem' (root em) is relative to the <html> font-size, making it predictable across components."
+    },
+    {
+      q: "What property controls the stacking order of overlapping elements?",
+      choices: ["order", "z-index", "stack", "layer"],
+      answer: 1,
+      explanation: "'z-index' determines which element sits on top when elements overlap. Higher = in front."
+    },
+    {
+      q: "Which pseudo-class targets an element when the user hovers over it?",
+      choices: [":focus", ":active", ":hover", ":visited"],
+      answer: 2,
+      explanation: "':hover' applies styles when the user's pointer is over the element."
+    },
+    {
+      q: "What does 'box-sizing: border-box' change?",
+      choices: ["Adds a border automatically", "Includes padding and border in the element's total width/height", "Removes the default margin", "Sets box shadow to none"],
+      answer: 1,
+      explanation: "With 'border-box', padding and border are included in the declared width/height — simpler layout math."
+    }
+  ],
+  js: [
+    {
+      q: "Which keyword declares a block-scoped variable that cannot be reassigned?",
+      choices: ["var", "let", "const", "static"],
+      answer: 2,
+      explanation: "'const' declares a block-scoped binding. The variable itself can't be reassigned (though objects it references can be mutated)."
+    },
+    {
+      q: "What does '===' check compared to '=='?",
+      choices: ["Only value, ignoring type", "Value AND type (strict equality)", "Reference equality only", "They are identical"],
+      answer: 1,
+      explanation: "'===' is strict equality — no type coercion. '==' coerces types before comparing."
+    },
+    {
+      q: "What will typeof null return?",
+      choices: ['"null"', '"undefined"', '"object"', '"boolean"'],
+      answer: 2,
+      explanation: "typeof null === 'object' is a well-known JavaScript bug from its original implementation."
+    },
+    {
+      q: "Which array method creates a new array with transformed elements?",
+      choices: [".forEach()", ".filter()", ".map()", ".reduce()"],
+      answer: 2,
+      explanation: "Array.map() returns a new array with each element transformed by the callback."
+    },
+    {
+      q: "What is a closure in JavaScript?",
+      choices: ["A way to close the browser tab", "A function that retains access to its outer scope after the outer function has returned", "A method to end a loop early", "A type of error handler"],
+      answer: 1,
+      explanation: "A closure is formed when an inner function captures variables from its enclosing scope, even after the outer function finishes."
+    },
+    {
+      q: "Which method adds an element to the END of an array?",
+      choices: [".unshift()", ".push()", ".append()", ".concat()"],
+      answer: 1,
+      explanation: "Array.push() appends one or more elements to the end and returns the new length."
+    },
+    {
+      q: "What does the 'async' keyword do when added to a function?",
+      choices: ["Makes the function run in a web worker", "Makes the function always return a Promise", "Makes the function synchronous", "Prevents the function from throwing errors"],
+      answer: 1,
+      explanation: "An 'async' function always returns a Promise. Inside it, you can use 'await' to pause on other Promises."
+    },
+    {
+      q: "What is the output of: console.log(0.1 + 0.2 === 0.3)?",
+      choices: ["true", "false", "undefined", "NaN"],
+      answer: 1,
+      explanation: "false — floating-point precision issues mean 0.1 + 0.2 = 0.30000000000000004, not 0.3."
+    },
+    {
+      q: "Which event fires when the DOM is fully loaded (without waiting for stylesheets/images)?",
+      choices: ["window.onload", "DOMContentLoaded", "readystatechange", "load"],
+      answer: 1,
+      explanation: "'DOMContentLoaded' fires when the HTML is parsed. 'load' waits for all assets including images."
+    },
+    {
+      q: "What does the spread operator (...) do?",
+      choices: ["Deletes array elements", "Expands an iterable into individual elements", "Creates a deep clone always", "Defines rest parameters only"],
+      answer: 1,
+      explanation: "The spread operator (...) expands iterables — useful for copying arrays, merging objects, and spreading args."
+    }
+  ]
+};
+
+/* ═══════════════════════════════════════════
+   TOPIC CONFIG
+═══════════════════════════════════════════ */
+const TOPIC_CONFIG = {
+  html: { label: 'HTML', color: '#E2522B', light: '#FDF0EC', darkLight: '#3A1508' },
+  css:  { label: 'CSS',  color: '#2462E8', light: '#EAF0FD', darkLight: '#0C1A3A' },
+  js:   { label: 'JavaScript', color: '#B08A00', light: '#FDF8E1', darkLight: '#2B2200' },
+  all:  { label: 'Mixed', color: '#2A4DD0', light: '#E8ECFB', darkLight: '#1A1E35' }
+};
+
+const LETTERS = ['A','B','C','D'];
+
+let currentTopic = null;
+let activeQuestions = [];
+let current = 0;
+let correct = 0;
+let wrong = 0;
+let answered = false;
+let results = [];
+let startTime = null;
+
+/* ── Update card count badges ── */
+document.getElementById('html-count').textContent = BANK.html.length + ' cards';
+document.getElementById('css-count').textContent  = BANK.css.length + ' cards';
+document.getElementById('js-count').textContent   = BANK.js.length + ' cards';
+
+/* ── Apply topic colour CSS vars ── */
+function applyTopicTheme(topicKey) {
+  const cfg = TOPIC_CONFIG[topicKey];
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.style.setProperty('--topic-color', cfg.color);
+  document.documentElement.style.setProperty('--topic-light', isDark ? cfg.darkLight : cfg.light);
+}
+
+function selectTopic(key) {
+  currentTopic = key;
+  applyTopicTheme(key);
+
+  if (key === 'all') {
+    const shuffled = shuffle([...BANK.html, ...BANK.css, ...BANK.js]);
+    activeQuestions = shuffled;
+  } else {
+    activeQuestions = shuffle([...BANK[key]]);
+  }
+
+  const cfg = TOPIC_CONFIG[key];
+
+  // Update UI chrome
+  document.getElementById('logo-badge').textContent = cfg.label;
+  document.getElementById('logo-badge').classList.add('visible');
+  document.getElementById('back-btn').classList.add('visible');
+
+  // Hide home, show quiz
+  document.getElementById('home-screen').style.display = 'none';
+  document.getElementById('quiz-wrap').classList.add('visible');
+
+  // Reset state
+  current = 0; correct = 0; wrong = 0; answered = false; results = [];
+  document.getElementById('correct-count').textContent = 0;
+  document.getElementById('wrong-count').textContent = 0;
+  startTime = Date.now();
+  loadCard();
+}
+
+function goHome() {
+  document.getElementById('home-screen').style.display = 'block';
+  document.getElementById('quiz-wrap').classList.remove('visible');
+  document.getElementById('result-screen').classList.remove('visible');
+  document.getElementById('logo-badge').classList.remove('visible');
+  document.getElementById('back-btn').classList.remove('visible');
+  // Reset default theme
+  document.documentElement.style.removeProperty('--topic-color');
+  document.documentElement.style.removeProperty('--topic-light');
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function loadCard() {
+  answered = false;
+  const q = activeQuestions[current];
+  const total = activeQuestions.length;
+
+  const pct = Math.round((current / total) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `Card ${current + 1} of ${total}`;
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('card-number').textContent = `${current + 1} / ${total}`;
+
+  // Topic tag on card
+  const tag = document.getElementById('card-tag');
+  const topicLabel = q.topic ? TOPIC_CONFIG[q.topic].label : TOPIC_CONFIG[currentTopic] ? TOPIC_CONFIG[currentTopic].label : 'Quiz';
+  tag.textContent = topicLabel;
+
+  // Reset flip
+  const cardInner = document.getElementById('card-inner');
+  const cardBack = document.getElementById('card-back');
+  cardInner.classList.remove('flipped');
+  cardBack.classList.remove('correct-card', 'wrong-card');
+
+  // Question
+  document.getElementById('question-text').textContent = q.q;
+  const codeEl = document.getElementById('question-code');
+  if (q.code) { codeEl.style.display = 'block'; codeEl.textContent = q.code; }
+  else { codeEl.style.display = 'none'; }
+
+  // Choices
+  const wrap = document.getElementById('choices-wrap');
+  wrap.innerHTML = '';
+  q.choices.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    const letter = document.createElement('span');
+    letter.className = 'choice-letter';
+    letter.textContent = LETTERS[i];
+    const text = document.createElement('span');
+    text.className = 'choice-text';
+    text.textContent = c;
+    btn.appendChild(letter);
+    btn.appendChild(text);
+    btn.onclick = () => selectAnswer(i, btn);
+    wrap.appendChild(btn);
+  });
+
+  document.getElementById('next-btn').classList.remove('visible');
+  document.getElementById('next-btn').innerHTML = `Next card <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+  cardInner.classList.add('pop');
+  setTimeout(() => cardInner.classList.remove('pop'), 350);
+}
+
+function selectAnswer(idx, btn) {
+  if (answered) return;
+  answered = true;
+
+  const q = activeQuestions[current];
+  const isCorrect = idx === q.answer;
+  const buttons = document.querySelectorAll('.choice-btn');
+  const cardBack = document.getElementById('card-back');
+  const cardInner = document.getElementById('card-inner');
+
+  if (isCorrect) {
+    correct++;
+    btn.classList.add('correct-choice', 'pulse-correct');
+    cardBack.classList.add('correct-card');
+    document.getElementById('result-label').className = 'answer-label correct-lbl';
+    document.getElementById('result-label').textContent = '✓ Correct answer';
+    document.getElementById('answer-display').className = 'answer-text correct-txt';
+  } else {
+    wrong++;
+    btn.classList.add('wrong-choice');
+    cardInner.classList.add('shake');
+    setTimeout(() => cardInner.classList.remove('shake'), 300);
+    buttons[q.answer].classList.add('correct-choice');
+    cardBack.classList.add('wrong-card');
+    document.getElementById('result-label').className = 'answer-label wrong-lbl';
+    document.getElementById('result-label').textContent = '✗ Not quite';
+    document.getElementById('answer-display').className = 'answer-text wrong-txt';
+  }
+
+  buttons.forEach((b, i) => {
+    if (i !== idx && i !== q.answer) b.classList.add('dimmed');
+    b.disabled = true;
+  });
+
+  document.getElementById('answer-display').textContent = q.choices[q.answer];
+  document.getElementById('answer-sub').textContent = q.explanation;
+  document.getElementById('correct-count').textContent = correct;
+  document.getElementById('wrong-count').textContent = wrong;
+
+  results.push({ q: q.q, chosen: q.choices[idx], correct: q.choices[q.answer], isCorrect });
+
+  setTimeout(() => { cardInner.classList.add('flipped'); }, 300);
+  setTimeout(() => {
+    document.getElementById('next-btn').classList.add('visible');
+    if (current === activeQuestions.length - 1) {
+      document.getElementById('next-btn').innerHTML = `See results <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    }
+  }, 800);
+}
+
+function nextCard() {
+  current++;
+  if (current >= activeQuestions.length) showResult();
+  else loadCard();
+}
+
+function showResult() {
+  document.getElementById('quiz-wrap').classList.remove('visible');
+  const rs = document.getElementById('result-screen');
+  rs.classList.add('visible');
+
+  const total = activeQuestions.length;
+  const pct = Math.round((correct / total) * 100);
+  const elapsed = Math.round((Date.now() - startTime) / 1000);
+
+  const cfg = TOPIC_CONFIG[currentTopic];
+  document.getElementById('result-topic-badge').textContent = cfg.label + ' Quiz';
+
+  let emoji = '😅', title = 'Keep at it!', msg = 'Every attempt sharpens your memory. Review the breakdown below and try again!';
+  if (pct >= 90) { emoji = '🏆'; title = 'Outstanding!'; msg = 'Top-tier recall — you clearly know your stuff cold.'; }
+  else if (pct >= 70) { emoji = '🎉'; title = 'Great work!'; msg = 'Solid performance! A little more review and you\'ll be unstoppable.'; }
+  else if (pct >= 50) { emoji = '💪'; title = 'Good effort!'; msg = 'You\'re halfway there. Focus on the missed cards and come back stronger.'; }
+
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-msg').textContent = msg;
+  document.getElementById('stat-score').textContent = `${correct}/${total}`;
+  document.getElementById('stat-pct').textContent = pct + '%';
+  document.getElementById('stat-time').textContent = elapsed + 's';
+
+  const bdList = document.getElementById('breakdown-list');
+  bdList.innerHTML = '';
+  results.forEach(r => {
+    const row = document.createElement('div');
+    row.className = 'breakdown-row';
+    const dot = document.createElement('span');
+    dot.className = 'bd-dot';
+    dot.style.background = r.isCorrect ? 'var(--correct)' : 'var(--wrong)';
+    const bq = document.createElement('span');
+    bq.className = 'bd-q';
+    bq.textContent = r.q;
+    const ba = document.createElement('span');
+    ba.className = 'bd-a';
+    ba.style.color = r.isCorrect ? 'var(--correct)' : 'var(--wrong)';
+    ba.textContent = r.correct;
+    row.appendChild(dot); row.appendChild(bq); row.appendChild(ba);
+    bdList.appendChild(row);
+  });
+}
+
+function restartQuiz() {
+  selectTopic(currentTopic);
+}
+
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? '' : 'dark');
+  document.getElementById('theme-icon').textContent = isDark ? '🌙' : '☀️';
+  document.getElementById('theme-label').textContent = isDark ? 'Dark mode' : 'Light mode';
+  if (currentTopic) applyTopicTheme(currentTopic);
+}
+</script>
+</body>
+</html>
